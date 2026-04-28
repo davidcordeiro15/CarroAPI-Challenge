@@ -72,7 +72,7 @@ public class CarroService {
         repository.delete(carro);
     }
 
-    // 🔥 conversão centralizada (boa prática)
+
     private CarroResponse toResponse(Carro carro) {
         return new CarroResponse(
                 carro.getId(),

@@ -1,25 +1,35 @@
 package com.challenge.CarroApi.security;
 
+import com.challenge.CarroApi.dto.TokenValidationResponse;
+import com.challenge.CarroApi.service.TokenValidationService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
+@Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final TokenValidationService tokenService;
 
-    public JwtFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
+    public JwtFilter(TokenValidationService tokenService) {
+        this.tokenService = tokenService;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs");
     }
 
     @Override
@@ -28,39 +38,30 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization");
-
-        if (header == null || !header.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String token = header.replace("Bearer ", "");
-
         try {
+            String header = request.getHeader("Authorization");
 
-            if (!jwtService.isValid(token)) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.getWriter().write("Token inválido");
-                return;
+            if (header != null && header.startsWith("Bearer ")) {
+
+                String token = header.substring(7);
+
+                TokenValidationResponse validation = tokenService.validate(token);
+
+                if (validation != null && validation.valid()) {
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    validation.email(),
+                                    null,
+                                    List.of(new SimpleGrantedAuthority("ROLE_" + validation.role()))
+                            );
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
 
-            String email = jwtService.extractEmail(token);
-            String role = jwtService.extractRole(token);
-
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            email,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                    );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
         } catch (Exception e) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Erro na autenticação");
-            return;
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
