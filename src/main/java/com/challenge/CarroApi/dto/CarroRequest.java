@@ -5,19 +5,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record CarroRequest(
 
-        @NotNull Long modeloId,
+        Long modeloId,
 
         @NotBlank String tipo,
 
-        @NotNull Integer ano,
+        @NotNull List<VersaoRequest> versoes
 
-        @NotBlank String cor,
 
-        @NotNull BigDecimal preco,
-
-        @NotBlank String placa
 
 ) {}

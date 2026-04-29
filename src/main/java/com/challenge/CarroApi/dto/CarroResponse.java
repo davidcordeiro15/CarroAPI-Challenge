@@ -1,8 +1,12 @@
 package com.challenge.CarroApi.dto;
 
+import java.util.List;
+
 public record CarroResponse(
-        Long id,
-        String modelo,
+        Long carroId,
         String marca,
-        String tipo
+        String modelo,
+        String tipo,
+        List<VersaoResponse> versoes
+
 ) {}
