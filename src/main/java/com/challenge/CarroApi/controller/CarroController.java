@@ -3,6 +3,7 @@ package com.challenge.CarroApi.controller;
 import com.challenge.CarroApi.dto.CarroRequest;
 import com.challenge.CarroApi.dto.CarroResponse;
 import com.challenge.CarroApi.service.CarroService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,18 +30,18 @@ public class CarroController {
         return ResponseEntity.status(201).body(service.create(request));
     }
 
-
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     public ResponseEntity<List<CarroResponse>> list() {
         return ResponseEntity.ok(service.list());
     }
-
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{id}")
     public ResponseEntity<CarroResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
-
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CarroResponse> update(
@@ -50,7 +51,7 @@ public class CarroController {
         return ResponseEntity.ok(service.update(id, request));
     }
 
-
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
