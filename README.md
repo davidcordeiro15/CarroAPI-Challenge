@@ -1,6 +1,6 @@
 # 🚗 CarroApi — API de Gerenciamento Automotivo
 
-> **Disciplina:** Arquitetura Orientada a Serviços e Web Services  
+
 > **Stack:** Java 21 · Spring Boot 4 · Oracle DB · JPA/Hibernate · JWT · Bucket4j  
 > **Porta:** `8081` | **Depende de:** AuthApi na porta `8080`
 
@@ -29,22 +29,6 @@
 A **CarroApi** é um microsserviço RESTful responsável por gerenciar o **catálogo automotivo** de uma plataforma de veículos. Ela permite criar, consultar, atualizar e excluir registros de carros com toda a sua hierarquia de dados: marca, modelo, versões e especificações técnicas.
 
 O projeto faz parte de um **ecossistema de microsserviços**, operando em conjunto obrigatório com a **AuthApi** (porta `8080`), que é responsável pela autenticação. A CarroApi não valida tokens JWT por conta própria — ela delega essa responsabilidade à AuthApi via chamada HTTP, o que é um padrão arquitetural importante de comunicação entre serviços.
-
-### Problema que Resolve
-
-Imagine uma plataforma como a Webmotors ou iCarros. Um veículo não é apenas um nome — ele tem uma hierarquia complexa:
-
-```
-Toyota (Marca)
-  └── Corolla (Modelo)
-        └── Corolla 2.0 XEi (Carro)
-              ├── Versão: GLi         ← mesma plataforma, configuração diferente
-              │     └── Especificação: Motor 2.0, 170cv, Automático...
-              └── Versão: XEi
-                    └── Especificação: Motor 2.0, 177cv, CVT...
-```
-
-Sem essa separação, qualquer alteração numa especificação técnica afetaria todos os registros. A API organiza essa hierarquia de forma que cada entidade tem sua responsabilidade e pode evoluir de forma independente.
 
 ### Conceito das Entidades
 
