@@ -1572,5 +1572,3 @@ public class CarroAuditoria {
 | RestTemplate | (via Boot) | Cliente HTTP para comunicação com AuthApi |
 
 ---
-
-*README gerado com base na análise completa do código-fonte do projeto CarroAPI-Challenge. Todas as explicações, exemplos e observações são baseados no código real do projeto.*
